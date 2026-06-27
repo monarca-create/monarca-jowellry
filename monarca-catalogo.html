@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monarca Jowelry</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Jost:wght@300;400;500&display=swap');
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  :root{
+    --bege:#F5EFE6;
+    --bege2:#EDE3D5;
+    --laranja:#E8A87C;
+    --laranja2:#D4845A;
+    --preto:#1A1A1A;
+    --cinza:#6B6B6B;
+    --branco:#FDFAF6;
+  }
+
+  body{background:var(--branco);color:var(--preto);font-family:'Jost',sans-serif;min-height:100vh;}
+
+  header{background:var(--preto);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+  .logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#F5EFE6;letter-spacing:0.12em;}
+  .logo span{color:var(--laranja);font-style:italic;}
+
+  .hero{background:var(--bege);padding:48px 24px 36px;text-align:center;border-bottom:1px solid var(--bege2);}
+  .hero-eyebrow{font-size:11px;letter-spacing:0.2em;color:var(--laranja2);text-transform:uppercase;margin-bottom:12px;}
+  .hero-title{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;line-height:1.15;color:var(--preto);margin-bottom:10px;}
+  .hero-title em{color:var(--laranja2);font-style:italic;}
+  .hero-sub{font-size:13px;color:var(--cinza);letter-spacing:0.05em;}
+
+  .filters{padding:20px 24px 8px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
+  .filters::-webkit-scrollbar{display:none;}
+  .filter-btn{border:1px solid var(--bege2);background:transparent;padding:8px 18px;border-radius:40px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:0.08em;cursor:pointer;white-space:nowrap;color:var(--cinza);transition:all .2s;}
+  .filter-btn.active,.filter-btn:hover{background:var(--preto);color:var(--bege);border-color:var(--preto);}
+
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding:16px 24px 40px;}
+
+  .card{background:#fff;border:1px solid var(--bege2);border-radius:8px;overflow:hidden;cursor:pointer;transition:transform .2s;}
+  .card:hover{transform:translateY(-2px);}
+  .card-img{width:100%;aspect-ratio:1;object-fit:cover;background:var(--bege);display:flex;align-items:center;justify-content:center;}
+  .card-img img{width:100%;height:100%;object-fit:cover;}
+  .card-img-placeholder{width:100%;aspect-ratio:1;background:var(--bege);display:flex;align-items:center;justify-content:center;}
+  .card-img-placeholder svg{opacity:0.25;}
+  .card-body{padding:12px;}
+  .card-cat{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--laranja2);margin-bottom:4px;}
+  .card-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:400;color:var(--preto);margin-bottom:6px;line-height:1.2;}
+  .card-price{font-size:14px;font-weight:500;color:var(--preto);margin-bottom:10px;}
+  .card-btn{width:100%;background:var(--preto);color:var(--bege);border:none;padding:9px;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;border-radius:4px;transition:background .2s;}
+  .card-btn:hover{background:var(--laranja2);}
+
+  .empty{text-align:center;padding:60px 24px;color:var(--cinza);}
+  .empty-icon{font-size:40px;margin-bottom:12px;opacity:0.3;}
+  .empty p{font-size:14px;}
+
+  footer{background:var(--preto);padding:28px 24px;text-align:center;}
+  footer p{font-family:'Cormorant Garamond',serif;font-size:13px;color:rgba(245,239,230,0.4);letter-spacing:0.1em;}
+
+  /* Modal */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:flex-end;justify-content:center;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:480px;padding:24px;max-height:90vh;overflow-y:auto;}
+  .modal-img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;background:var(--bege);margin-bottom:16px;}
+  .modal-cat{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--laranja2);margin-bottom:6px;}
+  .modal-name{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--preto);margin-bottom:8px;}
+  .modal-price{font-size:20px;font-weight:500;color:var(--preto);margin-bottom:12px;}
+  .modal-desc{font-size:14px;color:var(--cinza);line-height:1.6;margin-bottom:20px;}
+  .modal-wa{display:block;width:100%;background:#25D366;color:#fff;border:none;padding:14px;border-radius:8px;font-family:'Jost',sans-serif;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;text-decoration:none;text-align:center;}
+  .modal-close{position:absolute;top:16px;right:16px;background:var(--bege);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;}
+  .modal{position:relative;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Monarca <span>Jowelry</span></div>
+</header>
+
+<div class="hero">
+  <p class="hero-eyebrow">Coleção exclusiva</p>
+  <h1 class="hero-title">Peças que <em>contam</em><br>sua história</h1>
+  <p class="hero-sub">Semijoias com elegância e personalidade</p>
+</div>
+
+<div class="filters">
+  <button class="filter-btn active" onclick="filtrar('todos')">Todos</button>
+  <button class="filter-btn" onclick="filtrar('aneis')">Anéis</button>
+  <button class="filter-btn" onclick="filtrar('colares')">Colares</button>
+  <button class="filter-btn" onclick="filtrar('pulseiras')">Pulseiras</button>
+  <button class="filter-btn" onclick="filtrar('brincos')">Brincos</button>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<footer>
+  <p>© 2026 Monarca Jowelry — Todos os direitos reservados</p>
+</footer>
+
+<div class="modal-overlay" id="modal" onclick="fecharModal(event)">
+  <div class="modal" id="modal-content">
+    <button class="modal-close" onclick="fecharModal()">×</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'monarca_produtos';
+const CONFIG_KEY = 'monarca_config';
+
+function getConfig(){
+  return JSON.parse(localStorage.getItem(CONFIG_KEY)||'{"whatsapp":"11992384515"}');
+}
+
+function getProdutos(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(raw) return JSON.parse(raw);
+  return [
+    {id:1,nome:"Colar Dourado Fino",categoria:"colares",preco:"R$ 89,90",descricao:"Colar delicado banhado a ouro 18k. Perfeito para o dia a dia.",foto:""},
+    {id:2,nome:"Anel Solitário",categoria:"aneis",preco:"R$ 65,00",descricao:"Anel elegante com pedra central. Disponível em tamanhos 14 a 22.",foto:""},
+    {id:3,nome:"Pulseira Elos",categoria:"pulseiras",preco:"R$ 72,00",descricao:"Pulseira de elos dourados com fecho de segurança.",foto:""},
+    {id:4,nome:"Brinco Argola",categoria:"brincos",preco:"R$ 48,00",descricao:"Argola média dourada, leve e moderna.",foto:""}
+  ];
+}
+
+let categoriaAtiva = 'todos';
+
+function filtrar(cat){
+  categoriaAtiva = cat;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  renderGrid();
+}
+
+function placeholderSVG(){
+  return `<div class="card-img-placeholder"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>`;
+}
+
+function renderGrid(){
+  const produtos = getProdutos();
+  const grid = document.getElementById('grid');
+  const filtrados = categoriaAtiva === 'todos' ? produtos : produtos.filter(p=>p.categoria===categoriaAtiva);
+
+  if(!filtrados.length){
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">◇</div><p>Nenhum produto nesta categoria ainda.</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = filtrados.map(p=>`
+    <div class="card" onclick="abrirModal(${p.id})">
+      ${p.foto ? `<div class="card-img"><img src="${p.foto}" alt="${p.nome}"></div>` : placeholderSVG()}
+      <div class="card-body">
+        <p class="card-cat">${p.categoria}</p>
+        <p class="card-name">${p.nome}</p>
+        <p class="card-price">${p.preco}</p>
+        <button class="card-btn">Ver peça</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function abrirModal(id){
+  const produtos = getProdutos();
+  const p = produtos.find(x=>x.id===id);
+  if(!p) return;
+  const cfg = getConfig();
+  const msg = encodeURIComponent(`Olá! Tenho interesse na peça: ${p.nome} (${p.preco}). Poderia me dar mais informações?`);
+  const waLink = `https://wa.me/55${cfg.whatsapp.replace(/\D/g,'')}?text=${msg}`;
+
+  document.getElementById('modal-body').innerHTML = `
+    ${p.foto ? `<img class="modal-img" src="${p.foto}" alt="${p.nome}">` : `<div class="modal-img" style="display:flex;align-items:center;justify-content:center;">${placeholderSVG()}</div>`}
+    <p class="modal-cat">${p.categoria}</p>
+    <p class="modal-name">${p.nome}</p>
+    <p class="modal-price">${p.preco}</p>
+    <p class="modal-desc">${p.descricao}</p>
+    <a class="modal-wa" href="${waLink}" target="_blank">💬 Comprar via WhatsApp</a>
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+
+function fecharModal(e){
+  if(!e || e.target===document.getElementById('modal')){
+    document.getElementById('modal').classList.remove('open');
+  }
+}
+
+renderGrid();
+</script>
+</body>
+</html>
