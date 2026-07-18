@@ -4,30 +4,26 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Monarca Jowelry</title>
+<script src="https://sdk.mercadopago.com/js/v2"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Jost:wght@300;400;500&display=swap');
   *{margin:0;padding:0;box-sizing:border-box;}
   :root{--bege:#F5EFE6;--bege2:#EDE3D5;--laranja:#E8A87C;--laranja2:#D4845A;--preto:#1A1A1A;--cinza:#6B6B6B;--branco:#FDFAF6;}
   body{background:var(--branco);color:var(--preto);font-family:'Jost',sans-serif;min-height:100vh;}
-
   header{background:var(--preto);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
   .logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:#F5EFE6;letter-spacing:0.12em;}
   .logo span{color:var(--laranja);font-style:italic;}
-  .cart-btn{background:transparent;border:1px solid rgba(255,255,255,0.2);border-radius:40px;padding:8px 16px;color:#F5EFE6;font-family:'Jost',sans-serif;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .2s;}
-  .cart-btn:hover{background:rgba(255,255,255,0.1);}
+  .cart-btn{background:transparent;border:1px solid rgba(255,255,255,0.2);border-radius:40px;padding:8px 16px;color:#F5EFE6;font-family:'Jost',sans-serif;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:8px;}
   .cart-count{background:var(--laranja2);color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:500;}
-
   .hero{background:var(--bege);padding:48px 24px 36px;text-align:center;border-bottom:1px solid var(--bege2);}
   .hero-eyebrow{font-size:11px;letter-spacing:0.2em;color:var(--laranja2);text-transform:uppercase;margin-bottom:12px;}
   .hero-title{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;line-height:1.15;color:var(--preto);margin-bottom:10px;}
   .hero-title em{color:var(--laranja2);font-style:italic;}
   .hero-sub{font-size:13px;color:var(--cinza);letter-spacing:0.05em;}
-
   .filters{padding:20px 24px 8px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
   .filters::-webkit-scrollbar{display:none;}
   .filter-btn{border:1px solid var(--bege2);background:transparent;padding:8px 18px;border-radius:40px;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:0.08em;cursor:pointer;white-space:nowrap;color:var(--cinza);transition:all .2s;}
   .filter-btn.active,.filter-btn:hover{background:var(--preto);color:var(--bege);border-color:var(--preto);}
-
   .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding:16px 24px 100px;}
   .card{background:#fff;border:1px solid var(--bege2);border-radius:8px;overflow:hidden;transition:transform .2s;}
   .card:hover{transform:translateY(-2px);}
@@ -38,30 +34,26 @@
   .card-name{font-family:'Cormorant Garamond',serif;font-size:17px;color:var(--preto);margin-bottom:6px;line-height:1.2;cursor:pointer;}
   .card-price{font-size:14px;font-weight:500;color:var(--preto);margin-bottom:10px;}
   .card-btn{width:100%;background:var(--preto);color:var(--bege);border:none;padding:9px;font-family:'Jost',sans-serif;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;border-radius:4px;transition:all .2s;}
-  .card-btn:hover{background:var(--laranja2);}
   .card-btn.added{background:var(--laranja2);}
-
   .empty{text-align:center;padding:60px 24px;color:var(--cinza);grid-column:1/-1;}
   .loading{text-align:center;padding:60px 24px;color:var(--cinza);grid-column:1/-1;font-size:14px;}
 
+  /* OVERLAYS */
+  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:flex-end;justify-content:center;}
+  .overlay.open{display:flex;}
+  .panel{background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:480px;padding:24px;max-height:90vh;overflow-y:auto;position:relative;}
+  .panel-close{position:absolute;top:16px;right:16px;background:var(--bege);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;}
+
   /* MODAL PRODUTO */
-  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:flex-end;justify-content:center;}
-  .modal-overlay.open{display:flex;}
-  .modal{background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:480px;padding:24px;max-height:90vh;overflow-y:auto;position:relative;}
   .modal-img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;margin-bottom:16px;}
   .modal-placeholder{width:100%;aspect-ratio:1;background:var(--bege);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
   .modal-cat{font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--laranja2);margin-bottom:6px;}
   .modal-name{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--preto);margin-bottom:8px;}
   .modal-price{font-size:20px;font-weight:500;color:var(--preto);margin-bottom:12px;}
   .modal-desc{font-size:14px;color:var(--cinza);line-height:1.6;margin-bottom:20px;}
-  .modal-add{display:block;width:100%;background:var(--preto);color:var(--bege);border:none;padding:14px;border-radius:8px;font-family:'Jost',sans-serif;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;margin-bottom:10px;transition:background .2s;}
-  .modal-add:hover{background:var(--laranja2);}
-  .modal-close{position:absolute;top:16px;right:16px;background:var(--bege);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;}
+  .modal-add{display:block;width:100%;background:var(--preto);color:var(--bege);border:none;padding:14px;border-radius:8px;font-family:'Jost',sans-serif;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;}
 
   /* CARRINHO */
-  .cart-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;align-items:flex-end;justify-content:center;}
-  .cart-overlay.open{display:flex;}
-  .cart-panel{background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:480px;padding:24px;max-height:85vh;overflow-y:auto;position:relative;}
   .cart-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:var(--preto);margin-bottom:20px;}
   .cart-item{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--bege2);}
   .cart-item-img{width:56px;height:56px;border-radius:6px;object-fit:cover;background:var(--bege);flex-shrink:0;}
@@ -69,15 +61,45 @@
   .cart-item-name{font-size:14px;font-weight:500;color:var(--preto);margin-bottom:2px;}
   .cart-item-price{font-size:13px;color:var(--cinza);}
   .cart-item-qty{display:flex;align-items:center;gap:8px;margin-top:6px;}
-  .qty-btn{width:24px;height:24px;border-radius:50%;border:1px solid var(--bege2);background:transparent;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--preto);}
+  .qty-btn{width:24px;height:24px;border-radius:50%;border:1px solid var(--bege2);background:transparent;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
   .qty-num{font-size:13px;font-weight:500;min-width:20px;text-align:center;}
   .cart-item-remove{background:transparent;border:none;color:#ccc;cursor:pointer;font-size:18px;padding:4px;}
-  .cart-item-remove:hover{color:#e05a5a;}
   .cart-empty{text-align:center;padding:40px 0;color:var(--cinza);font-size:14px;}
   .cart-total{display:flex;justify-content:space-between;align-items:center;padding:16px 0;font-size:15px;font-weight:500;}
   .cart-total span:last-child{font-family:'Cormorant Garamond',serif;font-size:22px;}
-  .cart-wa{display:block;width:100%;background:#25D366;color:#fff;border:none;padding:14px;border-radius:8px;font-family:'Jost',sans-serif;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;text-decoration:none;text-align:center;margin-top:4px;}
-  .cart-close{position:absolute;top:16px;right:16px;background:var(--bege);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;}
+
+  /* BOTÕES FINALIZAR */
+  .checkout-btns{display:grid;gap:10px;margin-top:4px;}
+  .btn-pix{display:block;width:100%;background:#00B1EA;color:#fff;border:none;padding:14px;border-radius:8px;font-family:'Jost',sans-serif;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;text-align:center;}
+  .btn-cartao{display:block;width:100%;background:var(--preto);color:#fff;border:none;padding:14px;border-radius:8px;font-family:'Jost',sans-serif;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;}
+  .btn-wa{display:block;width:100%;background:#25D366;color:#fff;border:none;padding:14px;border-radius:8px;font-family:'Jost',sans-serif;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;text-decoration:none;text-align:center;}
+  .divider{display:flex;align-items:center;gap:10px;color:var(--cinza);font-size:12px;margin:4px 0;}
+  .divider::before,.divider::after{content:'';flex:1;border-top:1px solid var(--bege2);}
+
+  /* CHECKOUT */
+  .checkout-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--preto);margin-bottom:4px;}
+  .checkout-sub{font-size:12px;color:var(--cinza);margin-bottom:20px;}
+  .field-group{margin-bottom:14px;}
+  .field-group label{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--cinza);display:block;margin-bottom:6px;}
+  .field-group input,.field-group select{width:100%;border:1px solid var(--bege2);border-radius:6px;padding:10px 13px;font-family:'Jost',sans-serif;font-size:14px;outline:none;transition:border .2s;background:#fff;}
+  .field-group input:focus,.field-group select:focus{border-color:var(--laranja2);}
+  .resumo{background:var(--bege);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:var(--cinza);}
+  .resumo strong{color:var(--preto);font-size:16px;}
+  .btn-confirmar{width:100%;background:var(--laranja2);color:#fff;border:none;padding:14px;border-radius:8px;font-family:'Jost',sans-serif;font-size:13px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;margin-top:8px;}
+  .btn-voltar{width:100%;background:transparent;color:var(--cinza);border:1px solid var(--bege2);padding:11px;border-radius:8px;font-family:'Jost',sans-serif;font-size:12px;cursor:pointer;margin-top:8px;}
+
+  /* PIX */
+  .pix-box{text-align:center;padding:10px 0;}
+  .pix-box img{width:200px;height:200px;margin:0 auto 12px;display:block;}
+  .pix-code{background:var(--bege);border-radius:8px;padding:10px;font-size:11px;word-break:break-all;color:var(--preto);margin-bottom:12px;}
+  .btn-copiar{width:100%;background:var(--preto);color:#fff;border:none;padding:12px;border-radius:8px;font-family:'Jost',sans-serif;font-size:12px;cursor:pointer;letter-spacing:0.1em;text-transform:uppercase;}
+  .pix-info{font-size:12px;color:var(--cinza);text-align:center;margin-top:10px;line-height:1.6;}
+
+  /* SUCESSO */
+  .sucesso{text-align:center;padding:20px 0;}
+  .sucesso-icon{font-size:48px;margin-bottom:12px;}
+  .sucesso h3{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:var(--preto);margin-bottom:8px;}
+  .sucesso p{font-size:13px;color:var(--cinza);line-height:1.6;}
 
   /* BARRA FLUTUANTE */
   .float-bar{position:fixed;bottom:0;left:0;right:0;background:var(--preto);padding:14px 24px;display:none;align-items:center;justify-content:space-between;z-index:99;}
@@ -115,10 +137,8 @@
 </div>
 
 <div class="grid" id="grid"><div class="loading">Carregando peças...</div></div>
-
 <footer><p>© 2026 Monarca Jowelry — Todos os direitos reservados</p></footer>
 
-<!-- BARRA FLUTUANTE -->
 <div class="float-bar" id="float-bar">
   <div class="float-bar-info">
     <span id="float-qty">0 peças</span>
@@ -128,31 +148,32 @@
 </div>
 
 <!-- MODAL PRODUTO -->
-<div class="modal-overlay" id="modal" onclick="fecharModal(event)">
-  <div class="modal">
-    <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">×</button>
-    <div id="modal-body"></div>
-  </div>
+<div class="overlay" id="modal" onclick="fecharOverlay('modal',event)">
+  <div class="panel"><button class="panel-close" onclick="fechar('modal')">×</button><div id="modal-body"></div></div>
 </div>
 
 <!-- CARRINHO -->
-<div class="cart-overlay" id="cart-overlay" onclick="fecharCart(event)">
-  <div class="cart-panel">
-    <button class="cart-close" onclick="document.getElementById('cart-overlay').classList.remove('open')">×</button>
-    <h2 class="cart-title">Seu carrinho</h2>
-    <div id="cart-body"></div>
-  </div>
+<div class="overlay" id="cart-overlay" onclick="fecharOverlay('cart-overlay',event)">
+  <div class="panel"><button class="panel-close" onclick="fechar('cart-overlay')">×</button><div id="cart-body"></div></div>
+</div>
+
+<!-- CHECKOUT -->
+<div class="overlay" id="checkout-overlay" onclick="fecharOverlay('checkout-overlay',event)">
+  <div class="panel"><button class="panel-close" onclick="fechar('checkout-overlay')">×</button><div id="checkout-body"></div></div>
 </div>
 
 <script>
 const SUPA_URL='https://wiebkjlwgulkycnwdtze.supabase.co';
 const SUPA_KEY='sb_publishable_m3yGPwHDHMWVtG0Ujd2uYw_yO6WgvqN';
+const MP_PUBLIC_KEY='APP_USR-f6bfcd62-f64a-495d-bf8d-9f3f69437def';
+let mp;
 let todosOsProdutos=[];
 let categoriaAtiva='todos';
 let whatsapp='11992384515';
-let carrinho={}; // {id: {produto, qty}}
+let carrinho={};
 
 async function init(){
+  mp = new MercadoPago(MP_PUBLIC_KEY, {locale:'pt-BR'});
   try{
     const [rProd,rConf]=await Promise.all([
       fetch(`${SUPA_URL}/rest/v1/produtos?select=*&order=criado_em.desc`,{headers:{'apikey':SUPA_KEY,'Authorization':`Bearer ${SUPA_KEY}`}}),
@@ -162,9 +183,7 @@ async function init(){
     const conf=await rConf.json();
     if(conf[0]?.whatsapp) whatsapp=conf[0].whatsapp;
     renderGrid();
-  }catch(e){
-    document.getElementById('grid').innerHTML='<div class="empty">Erro ao carregar produtos.</div>';
-  }
+  }catch(e){document.getElementById('grid').innerHTML='<div class="empty">Erro ao carregar produtos.</div>';}
 }
 
 function filtrar(cat,btn){
@@ -174,139 +193,217 @@ function filtrar(cat,btn){
   renderGrid();
 }
 
+function ph(){return`<div class="card-placeholder"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1" opacity="0.2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>`;}
+
 function renderGrid(){
   const lista=categoriaAtiva==='todos'?todosOsProdutos:todosOsProdutos.filter(p=>p.categoria===categoriaAtiva);
   const grid=document.getElementById('grid');
   if(!lista.length){grid.innerHTML='<div class="empty">Nenhuma peça nesta categoria ainda.</div>';return;}
-  grid.innerHTML=lista.map(p=>{
-    const noCart=carrinho[p.id];
-    return`<div class="card">
-      ${p.foto?`<img class="card-img" src="${p.foto}" alt="${p.nome}" onclick="abrirModal('${p.id}')">`:`<div class="card-placeholder" onclick="abrirModal('${p.id}')"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1" opacity="0.2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>`}
+  grid.innerHTML=lista.map(p=>`
+    <div class="card">
+      ${p.foto?`<img class="card-img" src="${p.foto}" onclick="abrirModal('${p.id}')">`:`<div onclick="abrirModal('${p.id}')">${ph()}</div>`}
       <div class="card-body">
         <p class="card-cat">${p.categoria}</p>
         <p class="card-name" onclick="abrirModal('${p.id}')">${p.nome}</p>
         <p class="card-price">R$ ${p.preco}</p>
-        <button class="card-btn ${noCart?'added':''}" id="btn-${p.id}" onclick="adicionarAoCarrinho('${p.id}')">
-          ${noCart?'✓ Adicionado':'+ Adicionar ao carrinho'}
+        <button class="card-btn ${carrinho[p.id]?'added':''}" id="btn-${p.id}" onclick="adicionarAoCarrinho('${p.id}')">
+          ${carrinho[p.id]?'✓ Adicionado':'+ Adicionar'}
         </button>
       </div>
-    </div>`;
-  }).join('');
+    </div>`).join('');
 }
 
 function adicionarAoCarrinho(id){
   const p=todosOsProdutos.find(x=>x.id===id);
   if(!p)return;
-  if(carrinho[id]){
-    carrinho[id].qty++;
-  }else{
-    carrinho[id]={produto:p,qty:1};
-  }
-  atualizarCarrinhoUI();
-  // feedback no botão
+  if(carrinho[id]) carrinho[id].qty++;
+  else carrinho[id]={produto:p,qty:1};
+  atualizarUI();
   const btn=document.getElementById('btn-'+id);
   if(btn){btn.textContent='✓ Adicionado';btn.classList.add('added');}
 }
 
-function removerDoCarrinho(id){
-  delete carrinho[id];
-  atualizarCarrinhoUI();
-  renderGrid();
-  renderCarrinho();
-}
-
-function mudarQty(id,delta){
+function removerDoCarrinho(id){delete carrinho[id];atualizarUI();renderGrid();renderCarrinho();}
+function mudarQty(id,d){
   if(!carrinho[id])return;
-  carrinho[id].qty+=delta;
+  carrinho[id].qty+=d;
   if(carrinho[id].qty<=0){removerDoCarrinho(id);return;}
-  atualizarCarrinhoUI();
-  renderCarrinho();
+  atualizarUI();renderCarrinho();
 }
 
-function atualizarCarrinhoUI(){
+function calcTotal(){
+  return Object.values(carrinho).reduce((s,i)=>{
+    const p=parseFloat(String(i.produto.preco).replace(/[^\d,]/g,'').replace(',','.'));
+    return s+(isNaN(p)?0:p*i.qty);
+  },0);
+}
+
+function atualizarUI(){
   const itens=Object.values(carrinho);
   const total=itens.reduce((s,i)=>s+i.qty,0);
   const countEl=document.getElementById('cart-count');
   if(total>0){countEl.style.display='flex';countEl.textContent=total;}
-  else{countEl.style.display='none';}
-
-  // barra flutuante
-  const valor=itens.reduce((s,i)=>{
-    const preco=parseFloat(i.produto.preco.replace(/[^\d,]/g,'').replace(',','.'));
-    return s+(isNaN(preco)?0:preco*i.qty);
-  },0);
+  else countEl.style.display='none';
+  const valor=calcTotal();
   const floatBar=document.getElementById('float-bar');
   if(total>0){
     floatBar.classList.add('visible');
     document.getElementById('float-qty').textContent=`${total} peça${total>1?'s':''}`;
     document.getElementById('float-total').textContent=`R$ ${valor.toFixed(2).replace('.',',')}`;
-  }else{
-    floatBar.classList.remove('visible');
-  }
+  }else floatBar.classList.remove('visible');
 }
 
 function renderCarrinho(){
   const itens=Object.values(carrinho);
   const body=document.getElementById('cart-body');
-  if(!itens.length){
-    body.innerHTML='<div class="cart-empty">Seu carrinho está vazio.</div>';
-    return;
-  }
-  let total=0;
-  const itemsHTML=itens.map(({produto:p,qty})=>{
-    const preco=parseFloat(p.preco.replace(/[^\d,]/g,'').replace(',','.'));
-    const subtotal=isNaN(preco)?0:preco*qty;
-    total+=subtotal;
-    return`<div class="cart-item">
-      ${p.foto?`<img class="cart-item-img" src="${p.foto}">`:`<div class="cart-item-img"></div>`}
-      <div class="cart-item-info">
-        <p class="cart-item-name">${p.nome}</p>
-        <p class="cart-item-price">R$ ${p.preco}</p>
-        <div class="cart-item-qty">
-          <button class="qty-btn" onclick="mudarQty('${p.id}',-1)">−</button>
-          <span class="qty-num">${qty}</span>
-          <button class="qty-btn" onclick="mudarQty('${p.id}',1)">+</button>
-        </div>
-      </div>
-      <button class="cart-item-remove" onclick="removerDoCarrinho('${p.id}')">×</button>
-    </div>`;
-  }).join('');
-
-  const msg=encodeURIComponent(
-    `Olá! Gostaria de comprar:\n\n`+
-    itens.map(({produto:p,qty})=>`• ${qty}x ${p.nome} — R$ ${p.preco}`).join('\n')+
-    `\n\nTotal: R$ ${total.toFixed(2).replace('.',',')}`
-  );
+  if(!itens.length){body.innerHTML=`<h2 class="cart-title">Seu carrinho</h2><div class="cart-empty">Seu carrinho está vazio.</div>`;return;}
+  const total=calcTotal();
+  const msg=encodeURIComponent(`Olá! Gostaria de comprar:\n\n`+itens.map(({produto:p,qty})=>`• ${qty}x ${p.nome} — R$ ${p.preco}`).join('\n')+`\n\nTotal: R$ ${total.toFixed(2).replace('.',',')}`);
   const waLink=`https://wa.me/55${whatsapp.replace(/\D/g,'')}?text=${msg}`;
-
   body.innerHTML=`
-    ${itemsHTML}
+    <h2 class="cart-title">Seu carrinho</h2>
+    ${itens.map(({produto:p,qty})=>`
+      <div class="cart-item">
+        ${p.foto?`<img class="cart-item-img" src="${p.foto}">`:`<div class="cart-item-img"></div>`}
+        <div class="cart-item-info">
+          <p class="cart-item-name">${p.nome}</p>
+          <p class="cart-item-price">R$ ${p.preco}</p>
+          <div class="cart-item-qty">
+            <button class="qty-btn" onclick="mudarQty('${p.id}',-1)">−</button>
+            <span class="qty-num">${qty}</span>
+            <button class="qty-btn" onclick="mudarQty('${p.id}',1)">+</button>
+          </div>
+        </div>
+        <button class="cart-item-remove" onclick="removerDoCarrinho('${p.id}')">×</button>
+      </div>`).join('')}
     <div class="cart-total"><span>Total</span><span>R$ ${total.toFixed(2).replace('.',',')}</span></div>
-    <a class="cart-wa" href="${waLink}" target="_blank">💬 Finalizar pelo WhatsApp</a>
-  `;
+    <div class="checkout-btns">
+      <button class="btn-pix" onclick="abrirCheckout('pix')">⚡ Pagar com Pix</button>
+      <button class="btn-cartao" onclick="abrirCheckout('cartao')">💳 Pagar com Cartão</button>
+      <div class="divider">ou</div>
+      <a class="btn-wa" href="${waLink}" target="_blank">💬 Finalizar pelo WhatsApp</a>
+    </div>`;
+}
+
+function abrirCheckout(tipo){
+  fechar('cart-overlay');
+  const total=calcTotal();
+  const body=document.getElementById('checkout-body');
+  if(tipo==='pix'){
+    body.innerHTML=`
+      <h2 class="checkout-title">Pagar com Pix</h2>
+      <p class="checkout-sub">Preencha seus dados para gerar o QR Code</p>
+      <div class="resumo">Total: <strong>R$ ${total.toFixed(2).replace('.',',')}</strong></div>
+      <div class="field-group"><label>Nome completo</label><input type="text" id="pix-nome" placeholder="Seu nome"></div>
+      <div class="field-group"><label>E-mail</label><input type="email" id="pix-email" placeholder="seu@email.com"></div>
+      <button class="btn-confirmar" onclick="gerarPix()">Gerar QR Code Pix</button>
+      <button class="btn-voltar" onclick="fechar('checkout-overlay');abrirCarrinho()">← Voltar ao carrinho</button>`;
+  } else {
+    body.innerHTML=`
+      <h2 class="checkout-title">Pagar com Cartão</h2>
+      <p class="checkout-sub">Seus dados estão protegidos</p>
+      <div class="resumo">Total: <strong>R$ ${total.toFixed(2).replace('.',',')}</strong></div>
+      <div class="field-group"><label>Nome completo</label><input type="text" id="card-nome" placeholder="Seu nome"></div>
+      <div class="field-group"><label>E-mail</label><input type="email" id="card-email" placeholder="seu@email.com"></div>
+      <div class="field-group"><label>Número do cartão</label><div id="cardNumber" style="border:1px solid #EDE3D5;border-radius:6px;padding:10px;"></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="field-group"><label>Validade</label><div id="cardExpiration" style="border:1px solid #EDE3D5;border-radius:6px;padding:10px;"></div></div>
+        <div class="field-group"><label>CVV</label><div id="cardCvv" style="border:1px solid #EDE3D5;border-radius:6px;padding:10px;"></div></div>
+      </div>
+      <div class="field-group"><label>Nome no cartão</label><input type="text" id="card-titular" placeholder="Como aparece no cartão"></div>
+      <div class="field-group"><label>Parcelas</label><select id="card-parcelas">${gerarParcelas(total)}</select></div>
+      <button class="btn-confirmar" onclick="pagarCartao()">Confirmar pagamento</button>
+      <button class="btn-voltar" onclick="fechar('checkout-overlay');abrirCarrinho()">← Voltar ao carrinho</button>`;
+    setTimeout(()=>{
+      try{
+        const cardForm = mp.cardForm({amount:String(total.toFixed(2)),iframe:true,form:{id:'',cardNumber:{id:'cardNumber'},cardExpirationDate:{id:'cardExpiration'},cardCvv:{id:'cardCvv'},cardholderName:{id:'card-titular'},installments:{id:'card-parcelas'}},callbacks:{onFormMounted:e=>{if(e)console.warn('CardForm mount error:',e);},onSubmit:async(e)=>{e.preventDefault();}}});
+        window._cardForm=cardForm;
+      }catch(e){console.log('MP cardForm:',e);}
+    },300);
+  }
+  document.getElementById('checkout-overlay').classList.add('open');
+}
+
+function gerarParcelas(total){
+  const opts=[];
+  for(let i=1;i<=12;i++){
+    const v=(total/i).toFixed(2).replace('.',',');
+    opts.push(`<option value="${i}">${i}x de R$ ${v}${i===1?' (sem juros)':''}</option>`);
+  }
+  return opts.join('');
+}
+
+async function gerarPix(){
+  const nome=document.getElementById('pix-nome').value.trim();
+  const email=document.getElementById('pix-email').value.trim();
+  if(!nome||!email){alert('Preencha nome e e-mail.');return;}
+  const btn=document.querySelector('#checkout-body .btn-confirmar');
+  btn.textContent='Gerando Pix...';btn.disabled=true;
+  try{
+    const itens=Object.values(carrinho).map(({produto:p,qty})=>({nome:p.nome,preco:p.preco,qty}));
+    const r=await fetch('/api/pagar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({itens,pagador:{nome,email},tipo:'pix'})});
+    const data=await r.json();
+    if(!r.ok)throw new Error(data.error||'Erro ao gerar Pix');
+    document.getElementById('checkout-body').innerHTML=`
+      <h2 class="checkout-title">QR Code Pix</h2>
+      <div class="pix-box">
+        ${data.pix_base64?`<img src="data:image/png;base64,${data.pix_base64}" alt="QR Code Pix">`:''}
+        <p style="font-size:13px;color:var(--cinza);margin-bottom:10px;">ou copie o código abaixo:</p>
+        <div class="pix-code">${data.pix||''}</div>
+        <button class="btn-copiar" onclick="navigator.clipboard.writeText('${data.pix||''}').then(()=>this.textContent='✓ Copiado!')">Copiar código Pix</button>
+        <p class="pix-info">Total: <strong>R$ ${(data.total||0).toFixed(2).replace('.',',')}</strong><br>Após o pagamento você receberá a confirmação por e-mail.</p>
+      </div>`;
+  }catch(e){
+    btn.textContent='Gerar QR Code Pix';btn.disabled=false;
+    alert('Erro: '+e.message);
+  }
+}
+
+async function pagarCartao(){
+  const nome=document.getElementById('card-nome').value.trim();
+  const email=document.getElementById('card-email').value.trim();
+  if(!nome||!email){alert('Preencha nome e e-mail.');return;}
+  const btn=document.querySelector('#checkout-body .btn-confirmar');
+  btn.textContent='Processando...';btn.disabled=true;
+  try{
+    const token=await window._cardForm?.getCardFormData();
+    const itens=Object.values(carrinho).map(({produto:p,qty})=>({nome:p.nome,preco:p.preco,qty}));
+    const r=await fetch('/api/pagar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({itens,pagador:{nome,email,token:token?.token,parcelas:parseInt(document.getElementById('card-parcelas').value),payment_method_id:token?.paymentMethodId},tipo:'cartao'})});
+    const data=await r.json();
+    if(!r.ok)throw new Error(data.error||'Erro no pagamento');
+    if(data.status==='approved'){
+      carrinho={};atualizarUI();
+      document.getElementById('checkout-body').innerHTML=`
+        <div class="sucesso">
+          <div class="sucesso-icon">✅</div>
+          <h3>Pagamento aprovado!</h3>
+          <p>Seu pedido foi confirmado.<br>Em breve entraremos em contato.</p>
+        </div>`;
+    }else{
+      throw new Error('Pagamento não aprovado. Verifique os dados do cartão.');
+    }
+  }catch(e){
+    btn.textContent='Confirmar pagamento';btn.disabled=false;
+    alert('Erro: '+e.message);
+  }
 }
 
 function abrirModal(id){
   const p=todosOsProdutos.find(x=>x.id===id);
   if(!p)return;
   document.getElementById('modal-body').innerHTML=`
-    ${p.foto?`<img class="modal-img" src="${p.foto}" alt="${p.nome}">`:`<div class="modal-placeholder"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" stroke-width="1" opacity="0.2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>`}
+    ${p.foto?`<img class="modal-img" src="${p.foto}">`:`<div class="modal-placeholder">${ph()}</div>`}
     <p class="modal-cat">${p.categoria}</p>
     <p class="modal-name">${p.nome}</p>
     <p class="modal-price">R$ ${p.preco}</p>
     <p class="modal-desc">${p.descricao||''}</p>
-    <button class="modal-add" onclick="adicionarAoCarrinho('${p.id}');document.getElementById('modal').classList.remove('open')">+ Adicionar ao carrinho</button>
-  `;
+    <button class="modal-add" onclick="adicionarAoCarrinho('${p.id}');fechar('modal')">+ Adicionar ao carrinho</button>`;
   document.getElementById('modal').classList.add('open');
 }
 
-function abrirCarrinho(){
-  renderCarrinho();
-  document.getElementById('cart-overlay').classList.add('open');
-}
-
-function fecharModal(e){if(e.target===document.getElementById('modal'))document.getElementById('modal').classList.remove('open');}
-function fecharCart(e){if(e.target===document.getElementById('cart-overlay'))document.getElementById('cart-overlay').classList.remove('open');}
+function abrirCarrinho(){renderCarrinho();document.getElementById('cart-overlay').classList.add('open');}
+function fechar(id){document.getElementById(id).classList.remove('open');}
+function fecharOverlay(id,e){if(e.target===document.getElementById(id))fechar(id);}
 
 init();
 </script>
