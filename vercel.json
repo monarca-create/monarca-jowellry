@@ -1,4 +1,4 @@
-
+{
   "functions": {
     "api/pagar.js": {
       "runtime": "nodejs20.x"
